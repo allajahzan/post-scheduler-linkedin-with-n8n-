@@ -74,6 +74,9 @@ export default function SignupPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Telegram Chat ID</label>
               <Input placeholder="e.g. 123456789" {...register('telegram_chat_id')} />
+              <p className="text-xs text-muted-foreground">
+                To find your Chat ID, search for <span className="font-semibold text-foreground">@userinfobot</span> on Telegram and tap Start.
+              </p>
               {errors.telegram_chat_id && <p className="text-xs text-destructive">{errors.telegram_chat_id.message}</p>}
             </div>
             <Button type="submit" className="w-full mt-2" disabled={signup.isPending}>
