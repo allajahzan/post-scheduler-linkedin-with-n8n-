@@ -50,12 +50,12 @@ export function PostCard({ post, index, onEdit, onDelete }: PostCardProps) {
       <button
         onClick={() => isPending && onEdit(post)}
         disabled={!isPending}
-        className="flex-1 text-left disabled:cursor-default"
+        className="h-full flex flex-col gap-2 items-start disabled:cursor-default"
       >
         <h3 className="line-clamp-2 text-sm font-semibold text-foreground">
           {post.title}
         </h3>
-        <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+        <p className="line-clamp-3 text-xs leading-relaxed text-muted-foreground">
           {post.description}
         </p>
       </button>

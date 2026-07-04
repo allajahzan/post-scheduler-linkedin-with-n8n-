@@ -1,41 +1,51 @@
-import { NextResponse } from 'next/server';
-import { getDb } from '@/lib/mongodb';
-import { getSession } from '@/lib/auth';
-import { ObjectId } from 'mongodb';
+import { NextResponse } from "next/server";
+import { getDb } from "@/lib/mongodb";
+import { getSession } from "@/lib/auth";
+import { ObjectId } from "mongodb";
 
 export async function GET() {
   try {
     const session = await getSession();
 
     if (!session || !session.userId) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const db = await getDb();
-    const user = await db.collection('users').findOne({ _id: new ObjectId(session.userId) });
+    const user = await db.collection("users").findOne(
+      { _id: new ObjectId(session.userId) },
+      {
+        projection: {
+          password: 0,
+          linkedin_access_token: 0,
+          linkedin_person_urn: 0,
+        },
+      },
+    );
 
     if (!user) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
     // Check LinkedIn token expiration
-    if (user.linkedin_token_expires_at && new Date(user.linkedin_token_expires_at) < new Date()) {
+    if (
+      user.linkedin_token_expires_at &&
+      new Date(user.linkedin_token_expires_at) < new Date()
+    ) {
       // Return 401 to force frontend to redirect to login
-      return NextResponse.json({ message: 'LinkedIn session expired. Please log in again.' }, { status: 401 });
+      return NextResponse.json(
+        { message: "LinkedIn session expired. Please log in again." },
+        { status: 401 },
+      );
     }
-
-    // Remove sensitive fields before sending to frontend
-    delete user.password;
-    delete user.linkedin_access_token;
-    delete user.linkedin_token_expires_at;
-    delete user.linkedin_person_urn;
 
     // Calculate 3-day rolling quota
     const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
-    const recentPosts = await db.collection('posts')
-      .find({ 
+    const recentPosts = await db
+      .collection("posts")
+      .find({
         user_id: new ObjectId(session.userId),
-        created_at: { $gte: threeDaysAgo }
+        created_at: { $gte: threeDaysAgo },
       })
       .sort({ created_at: 1 })
       .toArray();
@@ -47,14 +57,19 @@ export async function GET() {
     if (used >= limit) {
       // The oldest post in the 3-day window dictates when the next slot opens
       const oldestPostTime = new Date(recentPosts[0].created_at).getTime();
-      next_reset_at = new Date(oldestPostTime + 3 * 24 * 60 * 60 * 1000).toISOString();
+      next_reset_at = new Date(
+        oldestPostTime + 3 * 24 * 60 * 60 * 1000,
+      ).toISOString();
     }
 
     const quota = { used, limit, next_reset_at };
 
     return NextResponse.json({ user, quota });
   } catch (error) {
-    console.error('User me error:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    console.error("User me error:", error);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

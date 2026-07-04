@@ -32,14 +32,14 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       <main className="relative flex-1 overflow-hidden">
         {/* Top-left ambient glow */}
         <div
-          className="pointer-events-none absolute -top-10 -left-10 h-[300px] w-[300px] rounded-full opacity-30 blur-3xl"
+          className="pointer-events-none fixed -top-10 -left-10 h-[300px] w-[300px] rounded-full opacity-30 blur-3xl"
           style={{
             background: "radial-gradient(circle, #3b82f6 0%, transparent 70%)",
           }}
         />
         {/* Top-right ambient glow */}
         <div
-          className="pointer-events-none absolute -top-10 -right-10 h-[300px] w-[300px] rounded-full opacity-20 blur-3xl"
+          className="pointer-events-none fixed -top-10 -right-10 h-[300px] w-[300px] rounded-full opacity-20 blur-3xl"
           style={{
             background: "radial-gradient(circle, #6366f1 0%, transparent 70%)",
           }}

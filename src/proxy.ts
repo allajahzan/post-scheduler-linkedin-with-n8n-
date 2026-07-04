@@ -7,9 +7,9 @@ const SECRET_KEY = new TextEncoder().encode(process.env.JWT_SECRET);
 export async function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
-  // Protect /dashboard, /profile, and /notifications routes
+  // Protect /posts, /profile, and /notifications routes
   if (
-    request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/posts") ||
     request.nextUrl.pathname.startsWith("/profile") ||
     request.nextUrl.pathname.startsWith("/notifications")
   ) {
@@ -34,7 +34,7 @@ export async function proxy(request: NextRequest) {
     if (token) {
       try {
         await jwtVerify(token, SECRET_KEY);
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+        return NextResponse.redirect(new URL("/posts", request.url));
       } catch (error) {
         // Token is invalid, let them proceed to login
       }
@@ -46,7 +46,7 @@ export async function proxy(request: NextRequest) {
     if (token) {
       try {
         await jwtVerify(token, SECRET_KEY);
-        return NextResponse.redirect(new URL("/dashboard", request.url));
+        return NextResponse.redirect(new URL("/posts", request.url));
       } catch (error) {
         // Token invalid, clear it and go to login
         const response = NextResponse.redirect(new URL("/login", request.url));
@@ -64,7 +64,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/dashboard/:path*",
+    "/posts/:path*",
     "/profile/:path*",
     "/notifications/:path*",
     "/login",

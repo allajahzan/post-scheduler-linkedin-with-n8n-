@@ -15,6 +15,20 @@ export async function DELETE() {
     const db = await getDb();
     const userId = new ObjectId(session.userId);
 
+    // Calculate 3-day rolling quota to prevent loophole
+    const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+    const recentPostsCount = await db.collection("posts").countDocuments({ 
+      user_id: userId,
+      created_at: { $gte: threeDaysAgo }
+    });
+
+    if (recentPostsCount >= 3) {
+      return NextResponse.json(
+        { message: "Cannot delete account while quota is reached. Please wait for your quota to reset." },
+        { status: 403 }
+      );
+    }
+
     // Delete user's posts
     await db.collection("posts").deleteMany({ user_id: userId });
 

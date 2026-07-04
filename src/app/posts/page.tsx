@@ -163,7 +163,7 @@ export default function DashboardPage() {
 
       <DeleteConfirmModal
         title="Delete Post"
-        description={`Are you sure you want to delete the post "${deletingPost?.title}"? This action cannot be undone.`}
+        description={`Are you sure you want to delete the post "${deletingPost?.title}"? (From this application). This action cannot be undone.`}
         isOpen={!!deletingPost}
         onClose={() => setDeletingPost(null)}
         onConfirm={handleConfirmDeletePost}

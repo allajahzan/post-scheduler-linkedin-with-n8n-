@@ -104,22 +104,23 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
 
             <AppInputField
               label="Post Title"
-              placeholder="Your raw idea — AI will polish it"
+              placeholder="Give a title for your post"
               error={errors.title}
               {...register("title")}
             />
 
             <AppTextareaField
               label="Post Description"
-              placeholder="Tell us more — Gemini will make it shine"
+              placeholder="Give a description for your post"
               className="min-h-[120px]"
               error={errors.description}
               {...register("description")}
             />
 
             <AppTextareaField
-              label="Image Generation Prompt"
-              placeholder="Describe the image you want Gemini to generate..."
+              label="AI Prompt"
+              optional
+              placeholder="Add specific instructions for AI to polish your title and description..."
               className="min-h-[120px]"
               error={errors.prompt}
               {...register("prompt")}
@@ -128,7 +129,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             <AppInputField
               label="Image URL"
               optional
-              placeholder="Paste any image URL or Google Drive link"
+              placeholder="Paste a Public Google Drive Link or Direct Image URL"
               className="disabled:opacity-30 disabled:cursor-not-allowed"
               disabled={generateImage}
               error={errors.image_url}
@@ -155,7 +156,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                     Generate Image with AI
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Pollination AI will design a matching visual
+                    Ai will design a matching visual for your post
                   </p>
                 </div>
               </div>

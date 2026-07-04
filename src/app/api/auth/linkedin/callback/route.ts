@@ -92,7 +92,7 @@ export async function GET(request: Request) {
     // Generate JWT cookie to log the user in
     const token = await signToken({ userId });
 
-    const response = NextResponse.redirect(new URL('/dashboard?linkedin=connected', request.url));
+    const response = NextResponse.redirect(new URL('/posts?linkedin=connected', request.url));
     
     // Set HTTP-only cookie
     response.cookies.set('token', token, {

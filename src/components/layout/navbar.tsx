@@ -43,32 +43,21 @@ export function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-40 py-4 bg-background/20 backdrop-blur-xl border-b">
       <div className="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-6">
-        <Link href="/dashboard">
+        <Link href="/posts">
           <LogoHeader />
         </Link>
 
         <div className="flex items-center gap-5">
           <Link
-            href="/dashboard"
+            href="/posts"
             className={cn(
               "hidden text-sm transition-colors md:block",
-              pathname === "/dashboard"
+              pathname === "/posts"
                 ? "text-foreground"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
-            Dashboard
-          </Link>
-          <Link
-            href="/docs"
-            className={cn(
-              "hidden text-sm transition-colors md:block",
-              pathname === "/docs"
-                ? "text-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            How it works
+            Posts
           </Link>
 
           {/* Notification Bell → links to /notifications page */}

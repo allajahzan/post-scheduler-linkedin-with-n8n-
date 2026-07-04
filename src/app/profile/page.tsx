@@ -30,6 +30,7 @@ function getInitials(name: string) {
 export default function ProfilePage() {
   const { data } = useUser();
   const user = data?.user;
+  const quota = data?.quota;
   const updateName = useUpdateName();
   const deleteAccount = useDeleteAccount();
 
@@ -240,11 +241,17 @@ export default function ProfilePage() {
                       </div>
                       <div className="text-xs text-muted-foreground">
                         This will permanently delete all your posts and data.
+                        {quota && quota.used >= quota.limit && (
+                          <div className="mt-2 text-amber-500 font-medium">
+                            Cannot delete account while your post quota is full.
+                          </div>
+                        )}
                       </div>
                     </div>
                     <Button
                       onClick={() => setIsDeleteModalOpen(true)}
-                      className="bg-transparent border-destructive text-destructive hover:bg-destructive hover:text-white"
+                      disabled={quota ? quota.used >= quota.limit : false}
+                      className="bg-transparent border-destructive text-destructive hover:bg-destructive hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Delete Account
                     </Button>
