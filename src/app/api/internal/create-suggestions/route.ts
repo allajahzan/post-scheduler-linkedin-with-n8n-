@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     // If n8n sends a stringified JSON string (e.g. using {{ JSON.stringify($json) }})
-    if (typeof body === 'string') {
+    if (typeof body === "string") {
       try {
         body = JSON.parse(body);
       } catch (e) {

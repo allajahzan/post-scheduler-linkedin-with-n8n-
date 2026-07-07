@@ -7,10 +7,10 @@ import { Loader2, Zap, Settings, Sparkles, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { Loader } from "@/components/ui/loader";
 import { EmptyState } from "@/components/common/empty-state";
-import { SuggestionsSetupModal } from "@/components/suggestions/suggestions-setup-modal";
+import { SuggestionsSettingsModal } from "@/components/suggestions/suggestions-settings-modal";
 import { CreatePostModal } from "@/components/posts/create-post-modal";
-import { formatDistanceToNow } from "date-fns";
 import { Suggestion, useSuggestions } from "@/hooks/use-suggestions";
+import { SuggestionCard } from "@/components/suggestions/suggestion-card";
 
 export default function SuggestionsPage() {
   const { data: userData, isLoading: isUserLoading } = useUser();
@@ -23,7 +23,8 @@ export default function SuggestionsPage() {
   } = useSuggestions();
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null);
+  const [selectedSuggestion, setSelectedSuggestion] =
+    useState<Suggestion | null>(null);
 
   const isLoading = isUserLoading || isSuggestionsLoading;
   const userPreferences = userData?.user?.preferences;
@@ -38,24 +39,23 @@ export default function SuggestionsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto max-w-7xl w-full px-6 py-10">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <Sparkles className="size-8 text-primary" />
-              AI Suggestions
+            <h1 className="text-xl font-bold tracking-tight">
+              AI Post Suggestions
             </h1>
-            <p className="mt-2 text-muted-foreground">
-              Curated post ideas based on the latest news in your selected topics.
+            <p className="text-sm text-muted-foreground">
+              Curated post ideas based on the latest news in your selected
+              topics.{" "}
+              <span className="text-primary font-medium">
+                New suggestions arrive every 3 days.
+              </span>
             </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => setShowSettingsModal(true)}
-            className="flex items-center gap-2 rounded-full"
-          >
-            <Settings className="size-4" />
-            Edit Topics
+          <Button variant="outline" onClick={() => setShowSettingsModal(true)}>
+            <Settings />
+            Topics
           </Button>
         </div>
 
@@ -65,7 +65,7 @@ export default function SuggestionsPage() {
             {userPreferences.topics.map((topic) => (
               <span
                 key={topic}
-                className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
+                className="rounded-full bg-secondary  px-2.5 py-1 text-xs font-medium text-secondary-foreground"
               >
                 {topic}
               </span>
@@ -81,75 +81,21 @@ export default function SuggestionsPage() {
           ) : !userPreferences?.suggestions_enabled ? (
             <EmptyState>
               You haven't set up your post suggestions yet.
-              <br />
-              <Button
-                variant="link"
-                onClick={() => setShowSettingsModal(true)}
-                className="mt-2 text-primary p-0 h-auto"
-              >
-                Click here to set them up
-              </Button>
             </EmptyState>
           ) : data?.pages[0].suggestions.length === 0 ? (
             <EmptyState>
               No suggestions found for your topics yet. Check back later!
             </EmptyState>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {data?.pages.map((page, i) => (
                 <div key={i} className="contents">
                   {page.suggestions.map((suggestion) => (
-                    <div
+                    <SuggestionCard
                       key={suggestion._id?.toString()}
-                      className="group relative p-6 flex flex-col justify-between overflow-hidden bg-linear-to-b from-card to-card/50 border border-primary/10 rounded-2xl shadow-sm transition-all hover:border-primary/30 hover:shadow-lg"
-                    >
-                      {/* Subtle Top Gradient Accent */}
-                      <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-primary/40 via-blue-500/40 to-primary/40 opacity-50 transition-opacity group-hover:opacity-100" />
-                      
-                      {/* Background Watermark */}
-                      <Sparkles className="absolute -right-4 -top-4 size-24 text-primary/5 transition-transform duration-500 group-hover:scale-110 group-hover:text-primary/10" />
-
-                      <div className="relative z-10">
-                        <div className="mb-4 flex items-center justify-between">
-                          <span className="px-3 py-1 text-[11px] font-semibold tracking-wide text-primary bg-primary/10 rounded-full shadow-sm backdrop-blur-md">
-                            {suggestion.topic}
-                          </span>
-                          <span className="text-[11px] font-medium text-muted-foreground">
-                            {formatDistanceToNow(new Date(suggestion.generated_at), { addSuffix: true })}
-                          </span>
-                        </div>
-                        <h3 className="mb-3 text-lg font-bold leading-snug text-foreground transition-colors line-clamp-2 group-hover:text-primary">
-                          {suggestion.title}
-                        </h3>
-                        <p className="mb-4 text-sm leading-relaxed text-muted-foreground line-clamp-4">
-                          {suggestion.description}
-                        </p>
-                      </div>
-                      
-                      <div className="relative z-10 mt-4 pt-4 flex items-center justify-between gap-3 border-t border-border/50">
-                        {suggestion.based_on ? (
-                          <a
-                            href={suggestion.based_on}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
-                          >
-                            <ExternalLink className="size-3.5" />
-                            Read Source
-                          </a>
-                        ) : (
-                          <div />
-                        )}
-                        <Button
-                          size="sm"
-                          className="gap-2 bg-primary/90 shadow-sm rounded-full transition-all hover:bg-primary hover:shadow-md hover:shadow-primary/25"
-                          onClick={() => handleUseSuggestion(suggestion)}
-                        >
-                          <Zap className="size-3.5" />
-                          Create Post
-                        </Button>
-                      </div>
-                    </div>
+                      suggestion={suggestion}
+                      onUse={handleUseSuggestion}
+                    />
                   ))}
                 </div>
               ))}
@@ -161,31 +107,29 @@ export default function SuggestionsPage() {
         {!isLoading && hasNextPage && (
           <div className="mt-8 flex justify-center">
             <Button
-              variant="outline"
+              variant="secondary"
               size="lg"
-              className="rounded-full"
               onClick={() => fetchNextPage()}
               disabled={isFetchingNextPage}
             >
               {isFetchingNextPage ? (
                 <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  <Loader2 className="size-4 animate-spin" />
                   Loading...
                 </>
               ) : (
-                "Load More Suggestions"
+                "Load More"
               )}
             </Button>
           </div>
         )}
       </div>
 
-      {showSettingsModal && (
-        <SuggestionsSetupModal
-          initialTopics={userPreferences?.topics || []}
-          onClose={() => setShowSettingsModal(false)}
-        />
-      )}
+      <SuggestionsSettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        initialTopics={userPreferences?.topics}
+      />
 
       {selectedSuggestion && (
         <CreatePostModal

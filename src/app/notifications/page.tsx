@@ -61,9 +61,7 @@ export default function NotificationsPage() {
               <Loader />
             </div>
           ) : data?.pages[0].notifications.length === 0 ? (
-            <EmptyState>
-              You don't have any notifications yet.
-            </EmptyState>
+            <EmptyState>You don't have any notifications yet.</EmptyState>
           ) : (
             <>
               {data?.pages.map((page, i) => (
@@ -102,12 +100,11 @@ export default function NotificationsPage() {
               ))}
 
               {hasNextPage && (
-                <div className="pt-6 pb-10 flex justify-center">
+                <div className="mt-8 flex justify-center">
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     onClick={() => fetchNextPage()}
                     disabled={isFetchingNextPage}
-                    className="min-w-[140px]"
                   >
                     {isFetchingNextPage ? (
                       <>

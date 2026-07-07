@@ -3,10 +3,17 @@
 import Link from "next/link";
 import { useUser, useLogout } from "@/hooks/use-auth";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Bell, LogOut, User as UserIcon } from "lucide-react";
+import { Bell, LogOut, User as UserIcon, Menu } from "lucide-react";
 import { LogoHeader } from "./logo-header";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +30,13 @@ function getInitials(name: string) {
     .toUpperCase()
     .slice(0, 2);
 }
+
+const MOBILE_NAV_ITEMS = [
+  { href: "/posts", label: "Posts" },
+  { href: "/suggestions", label: "Suggestions" },
+  { href: "/notifications", label: "Notifications" },
+  { href: "/profile", label: "Profile" },
+];
 
 export function Navbar() {
   const { data } = useUser();
@@ -52,9 +66,48 @@ export function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-40 py-4 bg-background/20 backdrop-blur-xl border-b">
       <div className="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-6">
-        <Link href="/posts">
-          <LogoHeader />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Sheet>
+            <SheetTrigger className="md:hidden flex items-center justify-center rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+              <Menu size={20} />
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="bg-card border-border/50 p-5 flex flex-col gap-5"
+            >
+              <SheetHeader className="p-0 text-left">
+                <SheetTitle>
+                  <LogoHeader />
+                </SheetTitle>
+              </SheetHeader>
+
+              <div className="flex flex-col gap-1 pt-5 border-t">
+                {MOBILE_NAV_ITEMS.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "text-sm font-medium transition-colors p-3 rounded-lg flex items-center justify-between gap-3",
+                      pathname === item.href
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                    )}
+                  >
+                    {item.label}
+                    {item.href === "/notifications" && unread > 0 && (
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white">
+                        {unread}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
+          <Link href="/posts">
+            <LogoHeader />
+          </Link>
+        </div>
 
         <div className="flex items-center gap-5">
           <Link
@@ -112,7 +165,7 @@ export function Navbar() {
 
             <DropdownMenuContent
               align="end"
-              className="w-56 bg-[#0B1120]/50 backdrop-blur-xl"
+              className="w-56 bg-[#0B1120]/80 bg-card backdrop-blur-xl"
             >
               {/* User info header */}
               <div className="px-2 py-2.5 select-none truncate">

@@ -28,7 +28,7 @@ export const useSuggestions = () => {
     queryKey: ["suggestions"],
     queryFn: async ({ pageParam = 1 }) => {
       const { data } = await api.get<SuggestionsResponse>(
-        `/suggestions?page=${pageParam}&limit=8`
+        `/suggestions?page=${pageParam}&limit=8`,
       );
       return data;
     },
@@ -39,5 +39,6 @@ export const useSuggestions = () => {
       return undefined;
     },
     initialPageParam: 1,
+    staleTime: 5 * 24 * 60 * 60 * 1000, // 5 days
   });
 };

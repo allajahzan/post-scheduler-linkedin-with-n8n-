@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Post, useUpdatePost } from "@/hooks/use-posts";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { Info, Sparkles } from "lucide-react";
 
 const postSchema = z.object({
@@ -53,8 +53,9 @@ export function EditPostModal({ post, isOpen, onClose }: EditPostModalProps) {
 
   const imageUrl = watch("image_url");
   const generateImage = watch("generate_image");
+  const isCompleted = post?.status === "done";
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (post && isOpen) {
       reset({
         title: post.title,
@@ -69,16 +70,10 @@ export function EditPostModal({ post, isOpen, onClose }: EditPostModalProps) {
   }, [post, isOpen, reset]);
 
   const onSubmit = (data: PostFormValues) => {
-    if (!post) return;
-
-    // Automatically set status back to pending if they repurpose a completed post.
-    const updateData = {
-      ...data,
-      status: "pending" as const,
-    };
+    if (!post || isCompleted) return;
 
     updatePost.mutate(
-      { id: post._id, postData: updateData },
+      { id: post._id, postData: data },
       {
         onSuccess: () => {
           onClose();
@@ -89,17 +84,18 @@ export function EditPostModal({ post, isOpen, onClose }: EditPostModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-xl p-0 overflow-hidden bg-[#0B1120]/50 backdrop-blur-xl">
+      <DialogContent className="sm:max-w-xl p-0 overflow-hidden bg-card backdrop-blur-xl">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col max-h-[85vh]"
         >
           {/* Header */}
           <DialogHeader className="p-5 border-b gap-1">
-            <DialogTitle>Edit Post</DialogTitle>
+            <DialogTitle>{isCompleted ? "View Post" : "Edit Post"}</DialogTitle>
             <DialogDescription>
-              Modify post details. Editing a completed post will reset it back
-              to pending.
+              {isCompleted
+                ? "This post has already been published. Editing is restricted."
+                : "Modify post details. Changes will be saved to your scheduled posts."}
             </DialogDescription>
           </DialogHeader>
 
@@ -163,7 +159,7 @@ export function EditPostModal({ post, isOpen, onClose }: EditPostModalProps) {
               </span>
             </p>
             <div
-              className={`flex items-center justify-between p-3 rounded-lg border transition-all ${generateImage ? "border-primary/50 bg-primary/5" : "border-border bg-[#111827]/50"}`}
+              className={`flex items-center justify-between p-3 rounded-lg border transition-all ${generateImage ? "border-primary/50 bg-primary/5" : "border-border bg-background"}`}
             >
               <div className="flex items-center gap-2">
                 <div className="flex size-8 items-center justify-center rounded-md bg-primary shadow-inner">
@@ -199,6 +195,7 @@ export function EditPostModal({ post, isOpen, onClose }: EditPostModalProps) {
             <SubmitButton
               isPending={updatePost.isPending}
               loadingText="Saving..."
+              disabled={isCompleted}
             >
               Save Changes
             </SubmitButton>

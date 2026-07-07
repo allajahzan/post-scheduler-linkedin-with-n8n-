@@ -38,7 +38,12 @@ interface CreatePostModalProps {
   onSuccess?: () => void;
 }
 
-export function CreatePostModal({ isOpen, onClose, initialData, onSuccess }: CreatePostModalProps) {
+export function CreatePostModal({
+  isOpen,
+  onClose,
+  initialData,
+  onSuccess,
+}: CreatePostModalProps) {
   const createPost = useCreatePost();
 
   const {
@@ -85,7 +90,7 @@ export function CreatePostModal({ isOpen, onClose, initialData, onSuccess }: Cre
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-xl p-0 overflow-hidden bg-[#0B1120]/50 backdrop-blur-xl">
+      <DialogContent className="sm:max-w-xl p-0 overflow-hidden bg-card backdrop-blur-xl">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col max-h-[90vh]"
@@ -158,7 +163,7 @@ export function CreatePostModal({ isOpen, onClose, initialData, onSuccess }: Cre
               </span>
             </p>
             <div
-              className={`flex items-center justify-between p-3 rounded-lg border transition-all ${generateImage ? "border-primary/50 bg-primary/5" : "border-border bg-[#111827]/50"}`}
+              className={`flex items-center justify-between p-3 rounded-lg border transition-all ${generateImage ? "border-primary/50 bg-primary/5" : "border-border bg-background"}`}
             >
               <div className="flex items-center gap-2">
                 <div className="flex size-8 items-center justify-center rounded-md bg-primary shadow-inner">

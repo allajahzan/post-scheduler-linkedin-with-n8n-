@@ -8,11 +8,12 @@ import { CreatePostModal } from "@/components/posts/create-post-modal";
 import { EditPostModal } from "@/components/posts/edit-post-modal";
 import { DeleteConfirmModal } from "@/components/common/delete-confirm-modal";
 import { EmptyState } from "@/components/common/empty-state";
-import { SuggestionsSetupModal } from "@/components/suggestions/suggestions-setup-modal";
+import { SuggestionsSetup } from "@/components/suggestions/suggestions-setup";
 import { Button } from "@/components/ui/button";
-import { Plus, AlertTriangle, Loader2 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { AlertTriangle, Loader2 } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
 import { Loader } from "@/components/ui/loader";
+import { LinkedInIcon } from "@/components/common/linkedin-icon";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<"scheduled" | "published">(
@@ -47,8 +48,8 @@ export default function DashboardPage() {
   const [showSuggestionsModal, setShowSuggestionsModal] = useState(false);
 
   // Trigger modal if preferences not set
-  useMemo(() => {
-    if (userData && userPreferences?.suggestions_enabled === false) {
+  useEffect(() => {
+    if (userData && !userPreferences?.suggestions_enabled) {
       setShowSuggestionsModal(true);
     }
   }, [userData, userPreferences?.suggestions_enabled]);
@@ -150,7 +151,7 @@ export default function DashboardPage() {
               disabled={isLimitReached}
               className="disabled:cursor-not-allowed"
             >
-              <Plus />
+              <LinkedInIcon />
               Schedule Post
             </Button>
             {isLimitReached && (
@@ -162,7 +163,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Tabs */}
-        <div className="mt-8 flex items-center gap-5 border-b">
+        <div className="mt-8 flex items-center gap-5">
           <button
             onClick={() => setActiveTab("scheduled")}
             className={`pb-2 text-sm font-medium transition-colors border-b-2 cursor-pointer ${activeTab === "scheduled" ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}
@@ -178,7 +179,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Posts Grid */}
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
             <div className="col-span-full flex items-center justify-center py-20">
               <Loader />
@@ -225,7 +226,7 @@ export default function DashboardPage() {
           (activeTab === "scheduled" ? hasNextScheduled : hasNextPublished) && (
             <div className="mt-8 flex justify-center">
               <Button
-                variant="outline"
+                variant="secondary"
                 onClick={() =>
                   activeTab === "scheduled"
                     ? fetchNextScheduled()
@@ -236,7 +237,6 @@ export default function DashboardPage() {
                     ? isFetchingNextScheduled
                     : isFetchingNextPublished
                 }
-                className="min-w-[140px]"
               >
                 {(
                   activeTab === "scheduled"
@@ -279,7 +279,10 @@ export default function DashboardPage() {
       />
 
       {showSuggestionsModal && (
-        <SuggestionsSetupModal onClose={() => setShowSuggestionsModal(false)} />
+        <SuggestionsSetup
+          onClose={() => setShowSuggestionsModal(false)}
+          initialTopics={userPreferences?.topics}
+        />
       )}
     </ProtectedRoute>
   );

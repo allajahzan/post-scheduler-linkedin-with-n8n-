@@ -28,7 +28,7 @@ export function DeleteConfirmModal({
 }: DeleteConfirmModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="p-0 bg-[#0B1120]/50 backdrop-blur-xl gap-0">
+      <DialogContent className="p-0 bg-card backdrop-blur-xl gap-0">
         <DialogHeader className="p-5 gap-1">
           <div className="flex items-center gap-2 text-destructive">
             <DialogTitle>{title}</DialogTitle>
